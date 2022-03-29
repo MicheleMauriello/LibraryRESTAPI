@@ -137,7 +137,7 @@ public class Library {
     }
 
 
-@PUT
+@POST
 @Path("/Prestiti")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
