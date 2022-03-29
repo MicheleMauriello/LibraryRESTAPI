@@ -133,3 +133,56 @@ public class Library {
         return Response.ok(obj,MediaType.APPLICATION_JSON).build();
     }
 }
+
+    @PUT
+    @Path("/Prestito")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response update2(@FormParam("idPrestiti") String idPrestiti,
+                       @FormParam("IDLibro")   String IDLibro,
+                       @FormParam("idUtente")   String idUtente,
+                       @FormParam("dataInizio") String dataInizio,
+                       @FormParam("dataFine") String dataFine,
+                       @FormParam("ISBN") String ISBN){
+        if(checkParams2(idPrestiti, IDLibro, idUtente, dataInizio, dataFine, ISBN))
+        {
+            String obj = new Gson().toJson("Parameters must be valid");
+            return Response.serverError().entity(obj).build();
+        }             
+        int totale = 0;
+        final String QUERY = "INSERT INTO Prestiti(idPrestiti, IDLibro, idUtente, dataInizio, dataFine, ISBN) VALUE(?,?,?,?)";
+        final String querySelezionaTotale = "SELECT Totale FROM Libri WHERE ISBN = '"+ISBN+"'";
+        
+        final String[] data = Database.getData();
+        try(
+
+            Connection connection = DriverManager.getConnection(data[0]);
+            PreparedStatement pstmt = connection.prepareStatement( QUERY );
+            PreparedStatement pstmt1 = connection.prepareStatement( querySelezionaTotale );
+    ) {
+        pstmt.setString(1, idPrestiti);
+        pstmt.setString(2, IDLibro);
+        pstmt.setString(3, idUtente);
+        pstmt.setString(4, dataInizio);
+        pstmt.setString(5, dataFine);
+        pstmt.setString(6, ISBN);
+        pstmt.execute();
+
+        ResultSet r = pstmt1.executeQuery();
+        while(r.next()){
+            totale = Integer.parseInt(r.getString("Totale libri"));
+        }
+        if(totale >0 ){
+            final String QUERYModificaTotale = "UPDATE Libri SET Totale = totale - '"+totale+"'";
+            PreparedStatement pstmt2 = connection.prepareStatement( QUERYModificaTotale );
+        }
+    }catch (SQLException e){
+        e.printStackTrace();
+        String obj = new Gson().toJson(error);
+        return Response.serverError().entity(obj).build();
+    }
+    String obj = new Gson().toJson("Libro con ISBN:" + ISBN + " aggiunto con successo");
+    return Response.ok(obj,MediaType.APPLICATION_JSON).build();
+}
+
+}
