@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            function loadDoc() {
+            const xhttp = new XMLHttpRequest();
+            //gestione risposta
+            xhttp.onload = function() {
+                document.getElementById("demo").innerHTML = this.responseText;
+                //effettuo il parsing della risposta
+                let dati=JSON.parse(this.responseText); 
+                //inserisco i dati nell'interfaccia
+                ISBN =  document.getElementById("ISBN").value
+                titolo = document.getElementById("Titolo").value
+                autore = document.getElementById("Autore").value
+                console.log(ISBN + " " + titolo +" "+ autore);
+            }
+
+            var select = document.getElementById('funzioni');
+            var value = select.options[select.selectedIndex].value;
+
+            switch (value){
+
+                case "get":
+                    //preparo l'URL
+                    xhttp.open("GET", "api/book/all");
+                    //popolo l'intestazione
+                    xhttp.setRequestHeader("accept","application/json");
+                    //richiamo l'URL
+                    xhttp.send();
+                    break;
+                
+                case "put":
+                    xhttp.open("POST", "api/book/update");
+                    xhttp.setRequestHeader("accept","application/json");
+                    xhttp.send(ISBN, titolo, autore);
+                    break;
+                
+                case "post":
+
+                    break;
+
+                case "delete":
+
+                    break;
+
+            }
+
+
+            }
+        </script>
+    </head>
+    <body>
+
+        <h2>The XMLHttpRequest Object</h2>
+        <button type="button" onclick="loadDoc()">Request data</button>
+
+        <p id="demo"></p>
+
+        <select name="funzioni" id="funzioni">
+            <option value="get">get</option>
+            <option value="put">update</option>
+            <option value="post">add</option>
+            <option value="delete">delete</option>
+          </select> <br>
+        <br>
+        <form>
+            ISBN<input type="text" name="ISBN" id="ISBN">
+            Titolo<input type="text" name="Titolo" id="Titolo">
+            Autore<input type="text" name="Autore" id="Autore">
+        </form>
+    </body>
+</html>
