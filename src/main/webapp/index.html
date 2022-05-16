@@ -2,72 +2,56 @@
 <html>
     <head>
         <script>
-            function loadDoc() {
-            const xhttp = new XMLHttpRequest();
-            //gestione risposta
-            xhttp.onload = function() {
-                document.getElementById("demo").innerHTML = this.responseText;
-                //effettuo il parsing della risposta
-                let dati=JSON.parse(this.responseText); 
-                //inserisco i dati nell'interfaccia
-                ISBN =  document.getElementById("ISBN").value
-                titolo = document.getElementById("Titolo").value
-                autore = document.getElementById("Autore").value
-                console.log(ISBN + " " + titolo +" "+ autore);
-            }
-
-            var select = document.getElementById('funzioni');
-            var value = select.options[select.selectedIndex].value;
-
-            switch (value){
-
-                case "get":
-                    //preparo l'URL
-                    xhttp.open("GET", "api/book/all");
-                    //popolo l'intestazione
-                    xhttp.setRequestHeader("accept","application/json");
-                    //richiamo l'URL
-                    xhttp.send();
-                    break;
-                
-                case "put":
-                    xhttp.open("POST", "api/book/update");
-                    xhttp.setRequestHeader("accept","application/json");
-                    xhttp.send(ISBN, titolo, autore);
-                    break;
-                
-                case "post":
-
-                    break;
-
-                case "delete":
-
-                    break;
-
-            }
+function loadDoc() {
+  const xhttp = new XMLHttpRequest();
+  //gestione risposta
+  xhttp.onload = function() {
+    document.getElementById("demo").innerHTML = this.responseText;
+    //effettuo il parsing della risposta
+    let dati=JSON.parse(this.responseText); 
+    //inserisco i dati nell'interfaccia
+    let text ="<table border='1'> <th>Autore</th><th>Titolo</th><th>ISBN</th>";
+    for (let x in dati){
+        text +="<tr><td>"+dati[x].Autore+"</td>";
+        text +="<td>"+dati[x].Titolo+"</td>";
+        text +="<td>"+dati[x].ISBN+"</td>";
+        text +="<td> <button type='button' onclick='loadUpdate("+dati[x].ISBN+")'> Aggiorna dati </button> </td>";
+        text +="<td> <button type='button' onclick='loadDelete("+dati[x].ISBN+")'> Elimina dati </button> </td> </tr>";
+    }
+    text +="</table>";
+    document.getElementById("demo").innerHTML=text;
+  }
+  //preparo l'URL
+  xhttp.open("GET", "/api/book/all");
+  //popolo l'intestazione
+  xhttp.setRequestHeader("accept","application/json");
+  //richiamo l'URL
+  xhttp.send();
+}
 
 
-            }
-        </script>
+function loadDelete(x) {
+  var formBody = new URLSearchParams({'ISBN': x});
+
+    
+      let res = fetch("/api/book/delete", {
+        method: "DELETE",
+        body: formBody,
+        headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        }
+      });
+ 
+}
+
+</script>
     </head>
-    <body>
+<body>
 
-        <h2>The XMLHttpRequest Object</h2>
-        <button type="button" onclick="loadDoc()">Request data</button>
+<h2>BIBLIOTECA</h2>
+<button type="button" onclick="loadDoc()">GET Libri</button>
+<button type="button" onclick="loadInsert()">INSERT Libri</button>
+<p id="demo"></p>
 
-        <p id="demo"></p>
-
-        <select name="funzioni" id="funzioni">
-            <option value="get">get</option>
-            <option value="put">update</option>
-            <option value="post">add</option>
-            <option value="delete">delete</option>
-          </select> <br>
-        <br>
-        <form>
-            ISBN<input type="text" name="ISBN" id="ISBN">
-            Titolo<input type="text" name="Titolo" id="Titolo">
-            Autore<input type="text" name="Autore" id="Autore">
-        </form>
-    </body>
+</body>
 </html>
