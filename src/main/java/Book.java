@@ -1,5 +1,5 @@
 public class Book {
-    private String Autore,Titolo,ISBN;
+    private String Autore,Titolo,ISBN,Prestito,Prezzo;
 
     public String getAutore() {
         return Autore;
@@ -23,5 +23,20 @@ public class Book {
 
     public void setISBN(String ISBN) {
         this.ISBN = ISBN;
+    }
+
+    public void setPrestito(String Prestito) {
+        this.Prestito = Prestito;
+    }
+    public String getPrestito() {
+        return Prestito;
+    }
+
+    public String getPrezzo() {
+        return Prezzo;
+    }
+
+    public void setPrezzo(String Prezzo) {
+        this.Prezzo = Prezzo;
     }
 }
